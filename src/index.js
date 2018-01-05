@@ -15,6 +15,8 @@ export default class IconfontPlugin {
       }
     }
 
+    this.ran = false;
+
     this.options = Object.assign({}, options);
     this.fileDependencies = [];
     this.hashes = {};
@@ -30,7 +32,15 @@ export default class IconfontPlugin {
   }
 
   compile(compilation, callback) {
-    const { options } = this;
+    const { options, ran } = this;
+
+    // Skip execution if already done and option is set
+    if (options && options.initialOnly && ran) {
+      return callback();
+    }
+
+    this.ran = true;
+
     return nodify(
       iconfont(options).then(result => {
           const { fontName } = result.config;
